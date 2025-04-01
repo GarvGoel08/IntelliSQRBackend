@@ -15,6 +15,15 @@ interface SignupRequestBody {
 const signupHandler: RequestHandler = async (req, res) => {
   try {
     const { uid, password } = req.body as SignupRequestBody;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(uid)) {
+      res.status(400).json({ message: 'Invalid email address' });
+      return;
+    }
+    if (password.length < 6) {
+      res.status(400).json({ message: 'Password must be at least 6 characters' });
+      return;
+    }
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
